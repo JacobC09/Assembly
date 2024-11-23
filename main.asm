@@ -3,7 +3,8 @@ bits 64
 
 segment .data
     welcome_string db "Calculate factorial of: ", 0 
-    output_string db "factorial of %ld is %ld", 0 
+    output_string db "\t >> Factorial of %ld is %ld", 0
+    invalid_string db "Your number is too high" 
     scanf_format db "%ld", 0  
     in_val dq 0
 
@@ -59,13 +60,25 @@ main:
     lea rdx, [in_val]  
     call scanf
 
-    mov rcx, [in_val]   
+    mov rcx, [in_val]
+    cmp rcx, 15
+    jl if_valid
+
+    lea rcx, [invalid_string]
+    call printf
+
+    jmp end
+
+end:    
+    xor rcx, rcx   
+    call ExitProcess
+
+if_valid:    
     call factorial   
 
     lea rcx, [output_string] 
     mov rdx, [in_val] 
     mov r8, rax 
     call printf
-
-    xor rcx, rcx   
-    call ExitProcess
+    
+    jmp end
